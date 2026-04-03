@@ -12,3 +12,79 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+enum NotificationType {
+  NEW_PARTICIPANT
+  CAPACITY_REACHED
+  REGISTRATION_OPENING_SOON
+  REGISTRATION_OPENED
+  REGISTRATION_CLOSING_SOON
+  REGISTRATION_CLOSED
+  TOURNAMENT_STARTING_SOON
+  TOURNAMENT_STARTED
+  CUSTOM
+}
+
+enum NotificationStatus {
+  PENDING
+  PROCESSING
+  SENT
+  FAILED
+  CANCELLED
+  READ
+}
+
+enum NotificationChannel {
+  IN_APP
+  EMAIL
+  WEBSOCKET
+}
+
+model Notification {
+  notificationID String @id @default(uuid())
+  sourceEventID String? // eventId que llega desde NATS
+  torneoID String
+  torneoName String?
+  organizatorID String
+  organizatorName String?
+  participantID String?
+  type NotificationType
+  title String
+  message String @db.Text
+
+  payload Json?
+
+  scheduledFor DateTime?
+  processedAt DateTime?
+  sentAt DateTime?
+  readAt DateTime?
+  status NotificationStatus @default(PENDING)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum LogLevel {
+  INFO
+  WARN
+  ERROR
+}
+
+model MicroserviceLog {
+  id             String   @id @default(uuid())
+  level          LogLevel
+  context        String
+  action         String
+  message        String   @db.Text
+  eventId        String?
+  notificationId String?
+  torneoId       String?
+  organizatorId  String?
+  metadata       Json?
+  errorStack     String?  @db.Text
+  createdAt      DateTime @default(now())
+
+  @@index([level, createdAt])
+  @@index([context, action])
+  @@index([eventId])
+  @@index([torneoId])
+}
