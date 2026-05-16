@@ -13,9 +13,19 @@ export class NotificationResController {
     return this.notificationResService.create(createNotificationReDto);
   }
 
-  @MessagePattern('findAllNotification')
-  findAll() {
-    return this.notificationResService.findAll();
+  @MessagePattern('findAllbyUser')
+  findAllbyUser(@Payload() userID: string) {
+    return this.notificationResService.findAllbyUser(userID);
+  }
+
+  @MessagePattern('markAsReadNotification')
+  markAsRead(@Payload() nID: string) {
+    return this.notificationResService.markAsRead(nID);
+  }
+
+  @MessagePattern('markAllAsReadNotification')
+  markAllAsRead(@Payload() userID: string) {
+    return this.notificationResService.markAllAsRead(userID);
   }
 
   @MessagePattern('findOneNotification')

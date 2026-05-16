@@ -61,6 +61,7 @@ model Notification {
   status NotificationStatus @default(PENDING)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  deleted Boolean @default(false)
 }
 
 enum LogLevel {
